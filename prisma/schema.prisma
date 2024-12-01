@@ -12,3 +12,161 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// User model
+model User {
+  userId       String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  image        String?
+  password     String
+  role         Role     @default(user)
+  isVerified   Boolean  @default(false)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  shop      Shop?
+  orders    Order[]
+  reviews   Review[]
+  cart      Cart?
+  following Follower[]
+}
+
+// Cart Model
+model Cart {
+  cartId    String   @id @default(uuid())
+  userId    String   @unique // Ensures one cart per user
+  user      User     @relation(fields: [userId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+}
+
+// CartItem Model
+model CartItem {
+  cartItemId String @id @default(uuid())
+
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [cartId])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [productId])
+
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Product Model
+model Product {
+  productId String @id @default(uuid())
+
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [shopId])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [categoryId])
+
+  name        String
+  price       Float
+  stock       Int
+  discount    Float?
+  image       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews Review[]
+
+  OrderItem OrderItem[]
+
+  CartItem CartItem[]
+}
+
+// Shop Model
+model Shop {
+  shopId String @id @default(uuid())
+
+  vendorId String @unique
+  vendor   User   @relation(fields: [vendorId], references: [userId])
+
+  shopName    String
+  description String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+  Follower Follower[]
+}
+
+// Product category Model
+model Category {
+  categoryId  String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+}
+
+// Review Model
+model Review {
+  reviewId  String   @id @default(uuid())
+  product   Product  @relation(fields: [productId], references: [productId])
+  productId String
+  user      User     @relation(fields: [userId], references: [userId])
+  userId    String
+  rating    Int // Rating between 1 and 5
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+// Follower Model
+model Follower {
+  followerId String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [userId])
+  userId     String
+  shop       Shop     @relation(fields: [shopId], references: [shopId])
+  shopId     String
+  createdAt  DateTime @default(now())
+}
+
+// Order Model
+model Order {
+  orderId     String      @id @default(uuid())
+  user        User        @relation(fields: [userId], references: [userId])
+  userId      String
+  totalAmount Float
+  status      OrderStatus // Enum: PENDING, PROCESSING, SHIPPED, DELIVERED, COMPLETED, CANCELLED
+  paymentId   String?
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// OrderItem Model
+model OrderItem {
+  orderItemId String  @id @default(uuid())
+  order       Order   @relation(fields: [orderId], references: [orderId])
+  orderId     String
+  product     Product @relation(fields: [productId], references: [productId])
+  productId   String
+  quantity    Int
+  price       Float // Price at the time of purchase
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+enum Role {
+  admin
+  vendor
+  user
+}

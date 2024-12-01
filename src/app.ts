@@ -7,7 +7,8 @@
  */
 
 import cors from "cors";
-import express, { Application, NextFunction, Request, Response } from "express";
+import express, { Application, Request, Response } from "express";
+import { globalErrorHandler, notFound } from "./app/utils";
 
 const app: Application = express();
 
@@ -19,15 +20,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send({ message: "City Computers server is running :(" });
 });
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json({
-    success: false,
-    message: "API not found!",
-    error: {
-      path: req.originalUrl,
-      message: "Your requested API endpoint not found!",
-    },
-  });
-});
+app.use(globalErrorHandler as unknown as express.ErrorRequestHandler);
+
+app.use(notFound);
 
 export default app;

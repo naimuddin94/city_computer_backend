@@ -28,9 +28,11 @@ const userSchema = z.object({
 
 // Create User Schema
 const userCreateSchema = z.object({
-  cookies: z.object({
-    accessToken: z.string().optional(),
-  }),
+  cookies: z
+    .object({
+      accessToken: z.string().optional(),
+    })
+    .optional(),
   body: userSchema,
 });
 

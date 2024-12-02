@@ -15,16 +15,17 @@ datasource db {
 
 // User model
 model User {
-  userId       String   @id @default(uuid())
+  userId       String     @id @default(uuid())
   name         String
-  email        String   @unique
+  email        String     @unique
   image        String?
   password     String
-  role         Role     @default(user)
-  isVerified   Boolean  @default(false)
+  role         Role       @default(user)
+  status       UserStatus @default(active)
+  isVerified   Boolean    @default(false)
   refreshToken String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   shop      Shop?
   orders    Order[]
@@ -156,13 +157,21 @@ model OrderItem {
   price       Float // Price at the time of purchase
 }
 
+enum UserStatus {
+  active
+  blocked
+}
+
 enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  COMPLETED
-  CANCELLED
+  pending
+  processing
+  shipped
+  delivered
+  completed
+  cancelled
+  returned
+  refund_requested
+  refunded
 }
 
 enum Role {

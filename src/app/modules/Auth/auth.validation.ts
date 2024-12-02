@@ -49,8 +49,8 @@ const userUpdateSchema = z.object({
   body: userSchema.partial(),
 });
 
-// Login Schema
-const loginSchema = z.object({
+// Signin Schema
+const signinSchema = z.object({
   body: z.object({
     email: z
       .string({
@@ -80,7 +80,7 @@ const passwordChangeSchema = z.object({
       .min(10, { message: "Access token must be at least 10 characters long" }),
   }),
   body: z.object({
-    oldPassword: z
+    currentPassword: z
       .string({
         required_error: "Old password is required",
         invalid_type_error: "Old password must be a valid string",
@@ -127,7 +127,7 @@ const refreshTokenValidationSchema = z.object({
 export const AuthValidation = {
   userCreateSchema,
   userUpdateSchema,
-  loginSchema,
+  signinSchema,
   passwordChangeSchema,
   accessTokenValidationSchema,
   refreshTokenValidationSchema,

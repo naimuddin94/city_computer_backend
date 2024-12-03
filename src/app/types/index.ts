@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { Router } from "express";
 
 export interface IErrorSource {
@@ -8,4 +9,20 @@ export interface IErrorSource {
 export interface IRoutes {
   path: string;
   route: Router;
+}
+
+export interface IRefreshTokenPayload {
+  userId: string;
+}
+
+export interface IAccessTokenPayload extends IRefreshTokenPayload {
+  email: string;
+  role: Role;
+}
+
+export interface IMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }

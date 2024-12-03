@@ -124,6 +124,15 @@ const refreshTokenValidationSchema = z.object({
   }),
 });
 
+// Change user status
+const changeUserStatusSchema = z.object({
+  body: z.object({
+    status: z.enum(["active", "blocked"], {
+      message: "Status must be either 'active' or 'blocked'.",
+    }),
+  }),
+});
+
 export const AuthValidation = {
   userCreateSchema,
   userUpdateSchema,
@@ -131,4 +140,5 @@ export const AuthValidation = {
   passwordChangeSchema,
   accessTokenValidationSchema,
   refreshTokenValidationSchema,
+  changeUserStatusSchema,
 };

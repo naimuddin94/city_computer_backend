@@ -1,3 +1,4 @@
+import generateMetaData from "./generateMetaData";
 import generateToken from "./generateToken";
 import pick from "./pick";
 import prisma from "./prisma";
@@ -11,4 +12,4 @@ const options = {
   maxAge: 365 * 24 * 60 * 60 * 1000,
 };
 
-export { generateToken, options, pick, prisma, verifyToken };
+export { generateMetaData, generateToken, options, pick, prisma, verifyToken };

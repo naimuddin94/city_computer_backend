@@ -1,14 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from "../config";
-
-interface IRefreshTokenPayload {
-  userId: string;
-}
-
-interface IAccessTokenPayload extends IRefreshTokenPayload {
-  email: string;
-  role: string;
-}
+import { IAccessTokenPayload, IRefreshTokenPayload } from "../types";
 
 const accessToken = (payload: IAccessTokenPayload) => {
   return jwt.sign(payload, config.jwt_access_secret as string, {

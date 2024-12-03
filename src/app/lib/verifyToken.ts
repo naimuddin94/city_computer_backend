@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import httpStatus from "http-status";
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils";
@@ -5,7 +6,7 @@ import { AppError } from "../utils";
 interface ITokenUser {
   userId: string;
   email?: string;
-  role?: string;
+  role?: Role;
 }
 
 const verifyToken = async (token: string, secret: string) => {

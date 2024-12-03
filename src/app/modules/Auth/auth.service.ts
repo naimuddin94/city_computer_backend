@@ -195,10 +195,59 @@ const changePassword = async (
   return null;
 };
 
+// Change user status
+const changeUserStatus = async (
+  accessToken: string,
+  id: string,
+  status: "active" | "blocked"
+) => {
+  if (!accessToken) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized");
+  }
+
+  const { userId, role } = await verifyToken(
+    accessToken,
+    config.jwt_access_secret as string
+  );
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      userId,
+      role,
+    },
+  });
+
+  if (user.role !== "admin") {
+    throw new AppError(httpStatus.FORBIDDEN, "Forbidden access");
+  }
+
+  const result = await prisma.user.update({
+    where: {
+      userId: id,
+    },
+    data: {
+      status,
+    },
+    select: {
+      name: true,
+      email: true,
+      image: true,
+      status: true,
+      role: true,
+      isVerified: true,
+      updatedAt: true,
+      createdAt: true,
+    },
+  });
+
+  return result;
+};
+
 export const AuthService = {
   saveUserIntoDB,
   signinUserIntoDB,
   signoutFromDB,
   updateUserIntoDB,
   changePassword,
+  changeUserStatus,
 };

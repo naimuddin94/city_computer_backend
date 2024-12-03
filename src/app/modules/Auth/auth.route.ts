@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { validateRequest } from "../../middleware/validateRequest";
+import { auth, validateRequest } from "../../middleware";
 import { AuthController } from "./auth.controller";
 import { AuthValidation } from "./auth.validation";
 
@@ -25,6 +25,7 @@ router.route("/signout").post(AuthController.signout);
 router
   .route("/change-password")
   .patch(
+    auth("user", "vendor", "admin"),
     validateRequest(AuthValidation.passwordChangeSchema),
     AuthController.changePassword
   );
@@ -32,9 +33,19 @@ router
 router
   .route("/profile")
   .patch(
+    auth("user", "vendor", "admin"),
     upload.single("image"),
     validateRequest(AuthValidation.userUpdateSchema),
     AuthController.updateUser
+  );
+
+// For administration only
+router
+  .route("/change-status/:userId")
+  .patch(
+    auth("admin"),
+    validateRequest(AuthValidation.changeUserStatusSchema),
+    AuthController.updateUserStatus
   );
 
 export const AuthRoutes = router;

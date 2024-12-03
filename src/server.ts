@@ -8,15 +8,14 @@
 
 import { Server } from "http";
 import app from "./app";
-
-const port = process.env.PORT || 5000;
+import config from "./app/config";
 
 let server: Server;
 
 // Server running IIFE functionality
 (async function () {
-  server = app.listen(port, function () {
-    console.log("Server listening on port: ", port);
+  server = app.listen(config.port, function () {
+    console.log("Server listening on port: ", config.port);
   });
 })();
 

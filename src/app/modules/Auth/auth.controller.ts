@@ -65,7 +65,6 @@ const changePassword = catchAsync(async (req, res) => {
 // Update user information
 const updateUser = catchAsync(async (req, res) => {
   const { accessToken } = req.cookies;
-
   const result = await AuthService.updateUserIntoDB(
     accessToken,
     req.body,
@@ -83,10 +82,29 @@ const updateUser = catchAsync(async (req, res) => {
     );
 });
 
+// Update user status
+const updateUserStatus = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const { accessToken } = req.cookies;
+  const { status } = req.body;
+  const result = await AuthService.changeUserStatus(
+    accessToken,
+    userId,
+    status
+  );
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(httpStatus.OK, result, "User status updated successfully")
+    );
+});
+
 export const AuthController = {
   createUser,
   signin,
   signout,
   changePassword,
   updateUser,
+  updateUserStatus,
 };

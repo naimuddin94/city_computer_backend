@@ -105,32 +105,35 @@ model Shop {
 
 // Product category Model
 model Category {
-  categoryId  String    @id @default(uuid())
-  name        String    @unique
-  description String?
-  products    Product[]
+  categoryId String    @id @default(uuid())
+  name       String    @unique
+  products   Product[]
 }
 
 // Review Model
 model Review {
-  reviewId  String   @id @default(uuid())
-  product   Product  @relation(fields: [productId], references: [productId])
   productId String
-  user      User     @relation(fields: [userId], references: [userId])
+  product   Product @relation(fields: [productId], references: [productId])
+
   userId    String
+  user      User     @relation(fields: [userId], references: [userId])
   rating    Int // Rating between 1 and 5
   comment   String?
   createdAt DateTime @default(now())
+
+  @@id([productId, userId])
 }
 
 // Follower Model
 model Follower {
-  followerId String   @id @default(uuid())
-  user       User     @relation(fields: [userId], references: [userId])
-  userId     String
-  shop       Shop     @relation(fields: [shopId], references: [shopId])
-  shopId     String
-  createdAt  DateTime @default(now())
+  userId String
+  user   User   @relation(fields: [userId], references: [userId])
+
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [shopId])
+  createdAt DateTime @default(now())
+
+  @@id([userId, shopId])
 }
 
 // Order Model

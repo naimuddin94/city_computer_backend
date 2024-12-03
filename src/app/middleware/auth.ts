@@ -34,6 +34,7 @@ const auth = (...requiredRoles: Role[]) => {
       );
     }
 
+    req.user = decoded as JwtPayload;
     next();
   });
 };

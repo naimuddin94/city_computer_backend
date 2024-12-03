@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+// Cookie validation schema
+export const cookieValidationSchema = z.object({
+  accessToken: z
+    .string({
+      required_error: "Access token is required",
+      invalid_type_error: "Access token must be a valid string",
+    })
+    .min(10, { message: "Access token must be at least 10 characters long" }),
+});
+
 // Base user schema with required fields
 const userSchema = z.object({
   name: z
@@ -38,14 +48,7 @@ const userCreateSchema = z.object({
 
 // Update User Schema
 const userUpdateSchema = z.object({
-  cookies: z.object({
-    accessToken: z
-      .string({
-        required_error: "Access token is required",
-        invalid_type_error: "Access token must be a valid string",
-      })
-      .min(10, { message: "Access token must be at least 10 characters long" }),
-  }),
+  cookies: cookieValidationSchema,
   body: userSchema.partial(),
 });
 
@@ -71,14 +74,7 @@ const signinSchema = z.object({
 
 // Password Change Schema
 const passwordChangeSchema = z.object({
-  cookies: z.object({
-    accessToken: z
-      .string({
-        required_error: "Access token is required",
-        invalid_type_error: "Access token must be a valid string",
-      })
-      .min(10, { message: "Access token must be at least 10 characters long" }),
-  }),
+  cookies: cookieValidationSchema,
   body: z.object({
     currentPassword: z
       .string({
@@ -100,14 +96,7 @@ const passwordChangeSchema = z.object({
 
 // Access toke validation schema
 const accessTokenValidationSchema = z.object({
-  cookies: z.object({
-    accessToken: z
-      .string({
-        required_error: "Access token is required",
-        invalid_type_error: "Access token must be a valid string",
-      })
-      .min(10, { message: "Access token must be at least 10 characters long" }),
-  }),
+  cookies: cookieValidationSchema,
 });
 
 // Refresh toke validation schema

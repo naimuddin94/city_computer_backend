@@ -25,7 +25,9 @@ const auth = (...requiredRoles: Role[]) => {
     const { userId } = decoded;
 
     // checking if the user is exist
-    const user = await prisma.user.findUniqueOrThrow({ where: { userId } });
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { userId, status: "active" },
+    });
 
     if (requiredRoles && !requiredRoles.includes(user.role)) {
       throw new AppError(

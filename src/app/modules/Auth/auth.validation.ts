@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { userRole } from "./auth.constant";
 
 // Cookie validation schema
 export const cookieValidationSchema = z.object({
@@ -115,10 +116,35 @@ const refreshTokenValidationSchema = z.object({
 
 // Change user status
 const changeUserStatusSchema = z.object({
+  cookies: cookieValidationSchema,
   body: z.object({
     status: z.enum(["active", "blocked"], {
       message: "Status must be either 'active' or 'blocked'.",
     }),
+  }),
+});
+
+// Change user role
+const changeUserRoleSchema = z.object({
+  cookies: cookieValidationSchema,
+  body: z.object({
+    role: z.enum(userRole, {
+      message: "Status must be either 'admin' or 'vendor' or 'user'.",
+    }),
+  }),
+});
+
+// Request for update role
+const requestedUserRoleSchema = z.object({
+  cookies: cookieValidationSchema,
+  body: z.object({
+    requestedRole: z.enum(userRole, {
+      message: "Status must be either 'admin' or 'vendor' or 'user'.",
+    }),
+    description: z
+      .string()
+      .max(500, { message: "Description must be under 500 characters" })
+      .optional(),
   }),
 });
 
@@ -130,4 +156,6 @@ export const AuthValidation = {
   accessTokenValidationSchema,
   refreshTokenValidationSchema,
   changeUserStatusSchema,
+  changeUserRoleSchema,
+  requestedUserRoleSchema,
 };

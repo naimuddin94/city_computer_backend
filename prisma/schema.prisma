@@ -27,37 +27,22 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  shop      Shop?
-  orders    Order[]
-  reviews   Review[]
-  cart      Cart?
-  following Follower[]
+  shop          Shop?
+  orders        Order[]
+  reviews       Review[]
+  following     Follower[]
+  RequestedUser RequestedUser?
 }
 
-// Cart Model
-model Cart {
-  cartId    String   @id @default(uuid())
-  userId    String   @unique // Ensures one cart per user
-  user      User     @relation(fields: [userId], references: [userId])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// Request to update role
+model RequestedUser {
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [userId])
+  requestedRole Role
+  license       String?
+  description   String?
 
-  items CartItem[]
-}
-
-// CartItem Model
-model CartItem {
-  cartItemId String @id @default(uuid())
-
-  cartId String
-  cart   Cart   @relation(fields: [cartId], references: [cartId])
-
-  productId String
-  product   Product @relation(fields: [productId], references: [productId])
-
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@id([userId])
 }
 
 // Product Model
@@ -82,8 +67,6 @@ model Product {
   reviews Review[]
 
   OrderItem OrderItem[]
-
-  CartItem CartItem[]
 }
 
 // Shop Model

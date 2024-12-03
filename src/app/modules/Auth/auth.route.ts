@@ -39,6 +39,15 @@ router
     AuthController.updateUser
   );
 
+router
+  .route("/request-for-role")
+  .post(
+    auth("user", "vendor", "admin"),
+    upload.single("license"),
+    validateRequest(AuthValidation.requestedUserRoleSchema),
+    AuthController.createRequestedUser
+  );
+
 // For administration only
 router
   .route("/change-status/:userId")
@@ -46,6 +55,14 @@ router
     auth("admin"),
     validateRequest(AuthValidation.changeUserStatusSchema),
     AuthController.updateUserStatus
+  );
+
+router
+  .route("/update-role/:userId")
+  .patch(
+    auth("admin"),
+    validateRequest(AuthValidation.changeUserRoleSchema),
+    AuthController.updateUserRole
   );
 
 export const AuthRoutes = router;

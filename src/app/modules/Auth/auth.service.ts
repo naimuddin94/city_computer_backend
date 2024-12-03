@@ -1,6 +1,7 @@
-import { User } from "@prisma/client";
+import { Prisma, Role, User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import httpStatus from "http-status";
+import { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import { generateToken, pick, prisma, verifyToken } from "../../lib";
 import { AppError, fileUploadOnCloudinary } from "../../utils";
@@ -243,6 +244,71 @@ const changeUserStatus = async (
   return result;
 };
 
+// Change user role
+const changeUserRoleIntoDB = async (
+  user: JwtPayload | null,
+  userId: string,
+  payload: { role: Role }
+) => {
+  if (!user) {
+    throw new AppError(httpStatus.FORBIDDEN, "Forbidden");
+  }
+
+  await prisma.user.findUniqueOrThrow({
+    where: {
+      userId: userId,
+    },
+  });
+
+  const requestedData = await prisma.requestedUser.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  return await prisma.$transaction(async (tx) => {
+    if (requestedData) {
+      await tx.requestedUser.delete({
+        where: {
+          userId: requestedData.userId,
+        },
+      });
+    }
+
+    return await tx.user.update({
+      where: { userId },
+      data: {
+        role: payload.role,
+      },
+      select: {
+        name: true,
+        email: true,
+        image: true,
+        role: true,
+      },
+    });
+  });
+};
+
+// Save updated request user information
+const saveRequestUserInfo = async (
+  user: JwtPayload | null,
+  payload: Prisma.RequestedUserCreateInput,
+  file: Express.Multer.File | null
+) => {
+  if (!user) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized");
+  }
+
+  if (file) {
+    payload.license = await fileUploadOnCloudinary(file.buffer);
+  }
+
+  return await prisma.requestedUser.create({
+    data: { ...payload, user: { connect: { userId: user.userId } } },
+  });
+};
+
 export const AuthService = {
   saveUserIntoDB,
   signinUserIntoDB,
@@ -250,4 +316,6 @@ export const AuthService = {
   updateUserIntoDB,
   changePassword,
   changeUserStatus,
+  changeUserRoleIntoDB,
+  saveRequestUserInfo,
 };

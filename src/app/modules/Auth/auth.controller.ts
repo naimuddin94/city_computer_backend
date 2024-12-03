@@ -100,6 +100,29 @@ const updateUserStatus = catchAsync(async (req, res) => {
     );
 });
 
+// Update user role
+const updateUserRole = catchAsync(async (req, res) => {
+  const user = req.user || null;
+  const userId = req.params.userId;
+  const result = await AuthService.changeUserRoleIntoDB(user, userId, req.body);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, "Role updated successfully"));
+});
+
+// Create requested user information
+const createRequestedUser = catchAsync(async (req, res) => {
+  const file = req.file || null;
+  const user = req.user || null;
+
+  const result = await AuthService.saveRequestUserInfo(user, req.body, file);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, "Request send successfully"));
+});
+
 export const AuthController = {
   createUser,
   signin,
@@ -107,4 +130,6 @@ export const AuthController = {
   changePassword,
   updateUser,
   updateUserStatus,
+  updateUserRole,
+  createRequestedUser,
 };

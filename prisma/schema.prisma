@@ -68,7 +68,7 @@ model Product {
   shop   Shop   @relation(fields: [shopId], references: [shopId])
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [categoryId])
+  category   Category @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
 
   name        String
   price       Float
@@ -91,7 +91,7 @@ model Shop {
   shopId String @id @default(uuid())
 
   vendorId String @unique
-  vendor   User   @relation(fields: [vendorId], references: [userId])
+  vendor   User   @relation(fields: [vendorId], references: [userId], onDelete: Cascade)
 
   shopName    String
   description String?
@@ -113,10 +113,10 @@ model Category {
 // Review Model
 model Review {
   productId String
-  product   Product @relation(fields: [productId], references: [productId])
+  product   Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   userId    String
-  user      User     @relation(fields: [userId], references: [userId])
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
   rating    Int // Rating between 1 and 5
   comment   String?
   createdAt DateTime @default(now())
@@ -127,10 +127,10 @@ model Review {
 // Follower Model
 model Follower {
   userId String
-  user   User   @relation(fields: [userId], references: [userId])
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   shopId    String
-  shop      Shop     @relation(fields: [shopId], references: [shopId])
+  shop      Shop     @relation(fields: [shopId], references: [shopId], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@id([userId, shopId])
@@ -139,7 +139,7 @@ model Follower {
 // Order Model
 model Order {
   orderId     String      @id @default(uuid())
-  user        User        @relation(fields: [userId], references: [userId])
+  user        User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId      String
   totalAmount Float
   status      OrderStatus // Enum: PENDING, PROCESSING, SHIPPED, DELIVERED, COMPLETED, CANCELLED
@@ -151,13 +151,15 @@ model Order {
 
 // OrderItem Model
 model OrderItem {
-  orderItemId String  @id @default(uuid())
-  order       Order   @relation(fields: [orderId], references: [orderId])
+  orderItemId String @id @default(uuid())
   orderId     String
-  product     Product @relation(fields: [productId], references: [productId])
-  productId   String
-  quantity    Int
-  price       Float // Price at the time of purchase
+  order       Order  @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  quantity Int
+  price    Float
 }
 
 enum UserStatus {

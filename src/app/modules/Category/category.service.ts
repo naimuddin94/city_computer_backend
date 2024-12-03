@@ -74,6 +74,9 @@ const deleteCategory = async (categoryId: string) => {
     where: {
       categoryId,
     },
+    include: {
+      products: true,
+    },
   });
 
   await prisma.category.delete({

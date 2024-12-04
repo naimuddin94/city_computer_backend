@@ -51,6 +51,25 @@ const getCouponByCode = async (code: string, shopId: string) => {
         shopId,
       },
     },
+    select: {
+      code: true,
+      discount: true,
+      expiryDate: true,
+      shop: {
+        select: {
+          name: true,
+          shopId: true,
+          status: true,
+          vendor: {
+            select: {
+              userId: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!coupon) {
@@ -60,13 +79,30 @@ const getCouponByCode = async (code: string, shopId: string) => {
   return coupon;
 };
 
+// Fetch available coupon from the database
+const getAvailableCoupon = async (shopId: string) => {
+  return await prisma.coupon.findMany({
+    where: {
+      shopId,
+      expiryDate: { gt: new Date() },
+      discount: { gt: 0 },
+    },
+  });
+};
+
 // Delete coupon by code and shopId
-const deleteCoupon = async (code: string, shopId: string) => {
+const deleteCoupon = async (user: JwtPayload, code: string) => {
+  const existShop = await prisma.shop.findUniqueOrThrow({
+    where: {
+      vendorId: user.userId,
+    },
+  });
+
   await prisma.coupon.findUniqueOrThrow({
     where: {
       code_shopId: {
         code,
-        shopId,
+        shopId: existShop.shopId,
       },
     },
   });
@@ -75,7 +111,7 @@ const deleteCoupon = async (code: string, shopId: string) => {
     where: {
       code_shopId: {
         code,
-        shopId,
+        shopId: existShop.shopId,
       },
     },
   });
@@ -89,7 +125,6 @@ const updateCoupon = async (
   user: JwtPayload,
   code: string
 ) => {
-    console.log({ payload, user, code });
   const existShop = await prisma.shop.findUniqueOrThrow({
     where: {
       vendorId: user.userId,
@@ -126,4 +161,5 @@ export const CouponService = {
   getCouponByCode,
   deleteCoupon,
   updateCoupon,
+  getAvailableCoupon,
 };

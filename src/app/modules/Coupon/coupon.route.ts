@@ -17,12 +17,15 @@ router
 
 router
   .route("/:code")
-  .get(auth(), CouponController.getCouponByCode)
   .patch(
     auth("vendor"),
     validateRequest(CouponValidation.updateSchema),
     CouponController.updateCoupon
   )
   .delete(auth("admin", "vendor"), CouponController.deleteCoupon);
+
+router.route("/:code/:shopId").get(CouponController.getCouponByCode);
+
+router.route("/shop/available/:shopId").get(CouponController.getAvailableCoupon);
 
 export const CouponRoutes = router;

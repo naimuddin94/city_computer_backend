@@ -27,11 +27,15 @@ const saveProductIntoDB = async (
     throw new AppError(httpStatus.FORBIDDEN, "You don't own a shop.");
   }
 
-  await prisma.category.findUniqueOrThrow({
+  const category = await prisma.category.findUniqueOrThrow({
     where: {
       categoryId: payload.category as string,
     },
   });
+
+  payload.price = Number(payload.price);
+  payload.stock = Number(payload.stock);
+  payload.discount = Number(payload.discount);
 
   // Upload image cloudinary and set URL
   if (file) {
@@ -45,11 +49,32 @@ const saveProductIntoDB = async (
   const productData = {
     ...payload,
     shop: { connect: { shopId: shop.shopId } },
+    category: {
+      connect: { categoryId: category.categoryId },
+    },
   };
 
   // Save the product in the database
   return await prisma.product.create({
     data: productData,
+    select: {
+      productId: true,
+      name: true,
+      price: true,
+      stock: true,
+      discount: true,
+      image: true,
+      description: true,
+      shop: {
+        select: {
+          shopId: true,
+          vendorId: true,
+          name: true,
+          logo: true,
+        },
+      },
+      category: true,
+    },
   });
 };
 

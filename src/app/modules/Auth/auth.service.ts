@@ -42,6 +42,7 @@ const saveUserIntoDB = async (
       name: true,
       email: true,
       image: true,
+      role: true,
     },
   });
 

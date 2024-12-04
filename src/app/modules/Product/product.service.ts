@@ -1,8 +1,10 @@
 import { Prisma } from "@prisma/client";
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
-import { generateMetaData, prisma } from "../../lib";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { prisma } from "../../lib";
 import { AppError, fileUploadOnCloudinary } from "../../utils";
+import { fields, searchableFields } from "./product.constant";
 
 // Save product into the database
 const saveProductIntoDB = async (
@@ -78,51 +80,24 @@ const saveProductIntoDB = async (
   });
 };
 
-// Get all products with pagination and optional search by name or category
 const getAllProducts = async (query: Record<string, unknown>) => {
-  const { page = 1, limit = 50, searchTerm = "" } = query;
+  const queryBuilder = new QueryBuilder("product", query);
 
-  const skip = (Number(page) - 1) * Number(limit);
+  // Use QueryBuilder methods
+  const data = await queryBuilder
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields(fields)
+    .execute();
 
-  const whereClause: Prisma.ProductWhereInput = searchTerm
-    ? {
-        OR: [
-          {
-            name: {
-              contains: String(searchTerm),
-              mode: Prisma.QueryMode.insensitive,
-            },
-          },
-          {
-            category: {
-              name: {
-                contains: String(searchTerm),
-                mode: Prisma.QueryMode.insensitive,
-              },
-            },
-          },
-        ],
-      }
-    : {};
-
-  const products = await prisma.product.findMany({
-    skip,
-    take: Number(limit),
-    where: whereClause,
-    include: {
-      category: true, // Include category information if needed
-    },
-  });
-
-  const totalProducts = await prisma.product.count({
-    where: whereClause,
-  });
-
-  const meta = generateMetaData(totalProducts, Number(page), Number(limit));
+  // Get the total count using countTotal
+  const meta = await queryBuilder.countTotal();
 
   return {
     meta,
-    data: products,
+    data: data,
   };
 };
 

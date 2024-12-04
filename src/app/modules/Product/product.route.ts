@@ -14,6 +14,7 @@ router
     upload.single("image"),
     validateRequest(ProductValidation.createSchema),
     ProductController.createProduct
-  );
+  )
+  .get(ProductController.getAllProducts);
 
 export const ProductRoutes = router;

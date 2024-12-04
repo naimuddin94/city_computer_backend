@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import { pick } from "../../lib";
 import { AppResponse, catchAsync } from "../../utils";
 import { ProductService } from "./product.service";
 
@@ -17,12 +18,19 @@ const createProduct = catchAsync(async (req, res) => {
 
 // Get all products with optional search and pagination
 const getAllProducts = catchAsync(async (req, res) => {
-  const result = await ProductService.getAllProducts(req.query);
+  const query = pick(req.query, [
+    "page",
+    "limit",
+    "searchTerm",
+    "sort",
+    "fields",
+  ]);
+  const result = await ProductService.getAllProducts(query);
 
   res
     .status(httpStatus.OK)
     .json(
-      new AppResponse(httpStatus.OK, result, "Products fetched successfully")
+      new AppResponse(httpStatus.OK, result, "Products retrieved successfully")
     );
 });
 

@@ -124,15 +124,19 @@ model Follower {
 
 // Order Model
 model Order {
-  orderId     String      @id @default(uuid())
-  user        User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  userId      String
-  totalAmount Float
-  status      OrderStatus
-  paymentId   String?
-  orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  orderId String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  totalAmount   Float
+  status        OrderStatus   @default(pending)
+  paymentId     String?
+  paymentStatus PaymentStatus @default(unpaid)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  orderItems OrderItem[]
 }
 
 // OrderItem Model
@@ -180,4 +184,9 @@ enum Role {
   admin
   vendor
   user
+}
+
+enum PaymentStatus {
+  paid
+  unpaid
 }

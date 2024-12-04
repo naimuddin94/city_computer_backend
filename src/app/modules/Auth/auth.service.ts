@@ -9,7 +9,9 @@ import { ILoginPayload } from "./auth.interface";
 
 // Save new user into the database
 const saveUserIntoDB = async (
-  payload: Pick<User, "name" | "email" | "password" | "image">,
+  payload: Pick<User, "name" | "email" | "password" | "image"> & {
+    role?: Role;
+  },
   file: Express.Multer.File | undefined
 ) => {
   const isUserExist = await prisma.user.findUnique({
@@ -20,11 +22,13 @@ const saveUserIntoDB = async (
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exists!");
   }
 
-  if (payload?.password) {
-    payload.password = await bcrypt.hash(
-      payload.password,
-      Number(config.bcrypt_salt_rounds)
-    );
+  payload.password = await bcrypt.hash(
+    payload.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  if (payload.role === "admin") {
+    delete payload.role;
   }
 
   if (file) {

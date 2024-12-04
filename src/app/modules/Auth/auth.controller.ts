@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 
 // Create new user
 const createUser = catchAsync(async (req, res) => {
+  const { accessToken } = req.cookies;
   const result = await AuthService.saveUserIntoDB(req.body, req.file);
 
   res

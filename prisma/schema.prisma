@@ -76,11 +76,11 @@ model Shop {
   vendorId String @unique
   vendor   User   @relation(fields: [vendorId], references: [userId], onDelete: Cascade)
 
-  shopName    String
+  name    String
   description String?
   logo        String?
   status      Status   @default(active)
-  isVerified  Boolean
+  isVerified  Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

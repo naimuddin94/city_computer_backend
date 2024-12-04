@@ -103,20 +103,32 @@ const getAllProducts = async (query: Record<string, unknown>) => {
 
 // Get product by ID
 const getProductById = async (productId: string) => {
-  const product = await prisma.product.findUnique({
+  return await prisma.product.findUniqueOrThrow({
     where: {
       productId,
     },
-    include: {
-      category: true,
+    select: {
+      name: true,
+      image: true,
+      price: true,
+      stock: true,
+      discount: true,
+      description: true,
+      createdAt: true,
+      updatedAt: true,
+      category: {
+        select: {
+          name: true,
+        },
+      },
+      shop: {
+        select: {
+          name: true,
+          vendorId: true,
+        },
+      },
     },
   });
-
-  if (!product) {
-    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
-  }
-
-  return product;
 };
 
 // Delete product by ID

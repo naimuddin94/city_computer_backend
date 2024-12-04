@@ -76,16 +76,17 @@ model Shop {
   vendorId String @unique
   vendor   User   @relation(fields: [vendorId], references: [userId], onDelete: Cascade)
 
-  name    String
+  name        String
   description String?
   logo        String?
   status      Status   @default(active)
-  isVerified  Boolean @default(false)
+  isVerified  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   products Product[]
   Follower Follower[]
+  Coupon   Coupon[]
 }
 
 // Product category Model
@@ -127,7 +128,7 @@ model Order {
   user        User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId      String
   totalAmount Float
-  status      OrderStatus // Enum: PENDING, PROCESSING, SHIPPED, DELIVERED, COMPLETED, CANCELLED
+  status      OrderStatus
   paymentId   String?
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
@@ -145,6 +146,17 @@ model OrderItem {
 
   quantity Int
   price    Float
+}
+
+// Coupons model
+model Coupon {
+  code       String
+  discount   Float
+  expiryDate DateTime
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [shopId], onDelete: Cascade)
+
+  @@id([code, shopId])
 }
 
 enum Status {

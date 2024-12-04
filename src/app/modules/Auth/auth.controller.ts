@@ -6,15 +6,19 @@ import { AuthService } from "./auth.service";
 
 // Create new user
 const createUser = catchAsync(async (req, res) => {
-  const { accessToken } = req.cookies;
-  const result = await AuthService.saveUserIntoDB(req.body, req.file);
+  const { data, accessToken, refreshToken } = await AuthService.saveUserIntoDB(
+    req.body,
+    req.file
+  );
 
   res
     .status(httpStatus.CREATED)
+    .cookie("refreshToken", refreshToken, options as CookieOptions)
+    .cookie("accessToken", accessToken, options as CookieOptions)
     .json(
       new AppResponse(
-        httpStatus.CREATED,
-        result,
+        httpStatus.OK,
+        { ...data, accessToken, refreshToken },
         "Account created successfully"
       )
     );

@@ -1,9 +1,10 @@
 import express from "express";
 import { AuthRoutes } from "../modules/Auth/auth.route";
 import { CategoryRoutes } from "../modules/Category/category.route";
+import { CouponRoutes } from "../modules/Coupon/coupon.route";
 import { ProductRoutes } from "../modules/Product/product.route";
-import { IRoutes } from "../types";
 import { ShopRoutes } from "../modules/Shop/shop.route";
+import { IRoutes } from "../types";
 
 const router = express.Router();
 
@@ -23,6 +24,10 @@ const moduleRoutes: IRoutes[] = [
   {
     path: "/shops",
     route: ShopRoutes,
+  },
+  {
+    path: "/coupons",
+    route: CouponRoutes,
   },
 ];
 

@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE "Coupon" ADD CONSTRAINT "Coupon_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "Shop"("shopId") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -35,7 +35,7 @@ const saveUserIntoDB = async (
     payload.image = await fileUploadOnCloudinary(file.buffer);
   }
 
-  const result = await prisma.user.create({
+  const user = await prisma.user.create({
     data: payload,
     select: {
       userId: true,
@@ -46,7 +46,25 @@ const saveUserIntoDB = async (
     },
   });
 
-  return result;
+  const tokenPayload = {
+    userId: user.userId,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = generateToken.accessToken(tokenPayload);
+  const refreshToken = generateToken.refreshToken({ userId: user.userId });
+
+  await prisma.user.update({
+    where: {
+      userId: user.userId,
+    },
+    data: {
+      refreshToken,
+    },
+  });
+
+  return { data: user, accessToken, refreshToken };
 };
 
 // User signin
@@ -85,6 +103,7 @@ const signinUserIntoDB = async (payload: ILoginPayload) => {
       name: true,
       email: true,
       image: true,
+      role: true,
       isVerified: true,
     },
   });

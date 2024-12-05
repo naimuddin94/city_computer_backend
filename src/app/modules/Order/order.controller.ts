@@ -13,4 +13,15 @@ const createOrder = catchAsync(async (req, res) => {
     );
 });
 
-export const OrderController = { createOrder };
+// Get my orders
+const getMyOrders = catchAsync(async (req, res) => {
+  const result = await OrderService.getMyOrders(req.user);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(httpStatus.OK, result, "Order retrieved successfully")
+    );
+});
+
+export const OrderController = { createOrder, getMyOrders };

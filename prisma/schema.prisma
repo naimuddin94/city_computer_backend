@@ -129,6 +129,8 @@ model Order {
   userId String
   user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
+  address       String?
+  phone         String?
   totalAmount   Float
   status        OrderStatus   @default(pending)
   paymentId     String?

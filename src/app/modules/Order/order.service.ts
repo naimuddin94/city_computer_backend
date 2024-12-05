@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../lib";
 import { AppError } from "../../utils";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 // Save a new order into the database
 const createOrder = async (
@@ -98,7 +99,19 @@ const createOrder = async (
 };
 // Get all orders with pagination and optional filters by status
 const getAllOrders = async (query: Record<string, unknown>) => {
-  const { page = 1, limit = 50, status, userId } = query;
+  const { page = 1, limit = 50, status, userId, searchTerm } = query;
+};
+
+// Fetches all owned orders
+const getMyOrders = async (user: JwtPayload) => {
+  return await prisma.order.findMany({
+    where: {
+      userId: user.userId,
+    },
+    include: {
+      orderItems: true,
+    },
+  });
 };
 
 // Get order by ID
@@ -162,6 +175,7 @@ const deleteOrder = async (orderId: string) => {
 export const OrderService = {
   createOrder,
   getAllOrders,
+  getMyOrders,
   getOrderById,
   updateOrderStatus,
   deleteOrder,

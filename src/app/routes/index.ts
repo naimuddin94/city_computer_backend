@@ -3,6 +3,7 @@ import { AuthRoutes } from "../modules/Auth/auth.route";
 import { CategoryRoutes } from "../modules/Category/category.route";
 import { CouponRoutes } from "../modules/Coupon/coupon.route";
 import { FollowerRoutes } from "../modules/Follower/follower.route";
+import { MeilisearchRoutes } from "../modules/Meilisearch/meilisearch.routes";
 import { OrderRotes } from "../modules/Order/order.route";
 import { ProductRoutes } from "../modules/Product/product.route";
 import { ShopRoutes } from "../modules/Shop/shop.route";
@@ -38,6 +39,10 @@ const moduleRoutes: IRoutes[] = [
   {
     path: "/followers",
     route: FollowerRoutes,
+  },
+  {
+    path: "/meilisearch",
+    route: MeilisearchRoutes,
   },
 ];
 

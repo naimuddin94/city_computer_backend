@@ -4,6 +4,11 @@ import { JwtPayload } from "jsonwebtoken";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { prisma } from "../../lib";
 import { AppError, fileUploadOnCloudinary } from "../../utils";
+import {
+  addToMeiliSearch,
+  deleteFromMeiliSearch,
+  IMeiliSearchPayload,
+} from "../../utils/meilisearch";
 import { fields, searchableFields } from "./product.constant";
 
 // Save product into the database
@@ -37,7 +42,6 @@ const saveProductIntoDB = async (
 
   payload.price = Number(payload.price);
   payload.stock = Number(payload.stock);
-  payload.discount = Number(payload.discount);
 
   // Upload image cloudinary and set URL
   if (file) {
@@ -57,14 +61,13 @@ const saveProductIntoDB = async (
   };
 
   // Save the product in the database
-  return await prisma.product.create({
+  const result = await prisma.product.create({
     data: productData,
     select: {
       productId: true,
       name: true,
       price: true,
       stock: true,
-      discount: true,
       image: true,
       description: true,
       shop: {
@@ -78,6 +81,26 @@ const saveProductIntoDB = async (
       category: true,
     },
   });
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Something went wrong while save product"
+    );
+  }
+
+  const meiliSearchData: IMeiliSearchPayload = {
+    id: result.productId,
+    name: result.name,
+    thumbnail: result.image,
+    shop: result.shop.name,
+    category: result.category.name,
+    description: result.description,
+  };
+
+  await addToMeiliSearch(meiliSearchData);
+
+  return result;
 };
 
 const getAllProducts = async (query: Record<string, unknown>) => {
@@ -112,7 +135,6 @@ const getProductById = async (productId: string) => {
       image: true,
       price: true,
       stock: true,
-      discount: true,
       description: true,
       createdAt: true,
       updatedAt: true,
@@ -133,7 +155,7 @@ const getProductById = async (productId: string) => {
 
 // Delete product by ID
 const deleteProduct = async (productId: string) => {
-  await prisma.product.findUniqueOrThrow({
+  const product = await prisma.product.findUniqueOrThrow({
     where: {
       productId,
     },
@@ -144,6 +166,8 @@ const deleteProduct = async (productId: string) => {
       productId,
     },
   });
+
+  await deleteFromMeiliSearch(product.productId);
 
   return null;
 };

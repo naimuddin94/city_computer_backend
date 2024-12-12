@@ -65,4 +65,6 @@ router
     AuthController.updateUserRole
   );
 
+router.route("/get-role/:userId").get(AuthController.getUserRole);
+
 export const AuthRoutes = router;

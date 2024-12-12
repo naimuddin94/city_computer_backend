@@ -33,6 +33,16 @@ const saveShopIntoDB = async (
   });
 };
 
+// Get shop by authenticated user
+const getShopByUser = async (user: JwtPayload) => {
+  return await prisma.shop.findUnique({
+    where: {
+      vendorId: user.userId,
+    },
+  });
+};
+
 export const ShopService = {
   saveShopIntoDB,
+  getShopByUser,
 };

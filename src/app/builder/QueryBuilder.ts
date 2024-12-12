@@ -129,13 +129,13 @@ class QueryBuilder<T> {
     const modelInstance = this.prisma[this.model as keyof typeof this.prisma];
     //@ts-expect-error
     const total = await modelInstance.count({ where: this.where });
-    const limit = Number(this.query?.limit) || 10;
+    const limit = Number(this.query?.limit) || 8;
     const page = Number(this.query?.page) || 1;
     return {
       total,
       page,
       limit,
-      totalPage: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limit),
     };
   }
 }

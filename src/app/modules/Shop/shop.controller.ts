@@ -16,6 +16,23 @@ const createShop = catchAsync(async (req, res) => {
     );
 });
 
+// Get shop information by authenticated user
+const getShopByUser = catchAsync(async (req, res) => {
+  const user = req.user;
+  const result = await ShopService.getShopByUser(user);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(
+        httpStatus.OK,
+        result,
+        "Shop information retrieved successfully"
+      )
+    );
+});
+
 export const ShopController = {
   createShop,
+  getShopByUser,
 };

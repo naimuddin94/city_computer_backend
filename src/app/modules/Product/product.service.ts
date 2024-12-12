@@ -95,7 +95,6 @@ const saveProductIntoDB = async (
     thumbnail: result.image,
     shop: result.shop.name,
     category: result.category.name,
-    description: result.description,
   };
 
   await addToMeiliSearch(meiliSearchData);
@@ -131,6 +130,7 @@ const getProductById = async (productId: string) => {
       productId,
     },
     select: {
+      productId: true,
       name: true,
       image: true,
       price: true,
@@ -147,6 +147,7 @@ const getProductById = async (productId: string) => {
         select: {
           name: true,
           vendorId: true,
+          address: true,
         },
       },
     },

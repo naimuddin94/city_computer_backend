@@ -36,9 +36,11 @@ const userSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long" })
     .max(32, { message: "Password must be under 32 characters" }),
 
-  role: z.enum(userRole, {
-    message: "Status must be either 'admin' or 'vendor' or 'user'.",
-  }),
+  role: z
+    .enum(userRole, {
+      message: "Status must be either 'admin' or 'vendor' or 'user'.",
+    })
+    .default("user"),
 });
 
 // Create User Schema

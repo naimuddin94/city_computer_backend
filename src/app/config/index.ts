@@ -24,4 +24,5 @@ export default {
   sender_email: process.env.SENDER_EMAIL,
   sender_app_password: process.env.SENDER_APP_PASS,
   client_url: process.env.CLIENT_URL,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
 };

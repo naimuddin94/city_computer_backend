@@ -35,6 +35,7 @@
     "jsonwebtoken": "^9.0.2",
     "meilisearch": "^0.46.0",
     "multer": "^1.4.5-lts.1",
+    "stripe": "^17.4.0",
     "uuid": "^11.0.3",
     "zod": "^3.23.8"
   }

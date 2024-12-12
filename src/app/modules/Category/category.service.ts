@@ -39,6 +39,9 @@ const getAllCategories = async (query: Record<string, unknown>) => {
     skip,
     take: Number(limit),
     where: whereClause,
+    orderBy: {
+      createdAt: "asc",
+    },
   });
 
   const totalCategories = await prisma.category.count({

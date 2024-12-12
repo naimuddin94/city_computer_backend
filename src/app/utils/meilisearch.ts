@@ -11,7 +11,6 @@ export interface IMeiliSearchPayload {
   id: string;
   thumbnail: string;
   name: string;
-  description: string;
   category: string;
   shop: string;
 }

@@ -128,6 +128,16 @@ const createRequestedUser = catchAsync(async (req, res) => {
     .json(new AppResponse(httpStatus.OK, result, "Request send successfully"));
 });
 
+// Get user information from DB
+const getUserRole = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+  const result = await AuthService.fetchUserRoleFromDB(userId);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, "Profile fetch successfully"));
+});
+
 export const AuthController = {
   createUser,
   signin,
@@ -137,4 +147,5 @@ export const AuthController = {
   updateUserStatus,
   updateUserRole,
   createRequestedUser,
+  getUserRole,
 };

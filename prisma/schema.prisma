@@ -63,8 +63,7 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  reviews Review[]
-
+  reviews   Review[]
   OrderItem OrderItem[]
 }
 
@@ -76,6 +75,7 @@ model Shop {
   vendor   User   @relation(fields: [vendorId], references: [userId], onDelete: Cascade)
 
   name        String
+  address     String
   description String?
   logo        String?
   status      Status   @default(active)
@@ -92,6 +92,7 @@ model Shop {
 model Category {
   categoryId String    @id @default(uuid())
   name       String    @unique
+  createdAt  DateTime  @default(now())
   products   Product[]
 }
 

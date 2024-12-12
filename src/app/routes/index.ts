@@ -5,6 +5,7 @@ import { CouponRoutes } from "../modules/Coupon/coupon.route";
 import { FollowerRoutes } from "../modules/Follower/follower.route";
 import { MeilisearchRoutes } from "../modules/Meilisearch/meilisearch.routes";
 import { OrderRotes } from "../modules/Order/order.route";
+import { PaymentRoutes } from "../modules/Payment/payment.route";
 import { ProductRoutes } from "../modules/Product/product.route";
 import { ShopRoutes } from "../modules/Shop/shop.route";
 import { IRoutes } from "../types";
@@ -43,6 +44,10 @@ const moduleRoutes: IRoutes[] = [
   {
     path: "/meilisearch",
     route: MeilisearchRoutes,
+  },
+  {
+    path: "/payments",
+    route: PaymentRoutes,
   },
 ];
 

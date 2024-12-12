@@ -23,15 +23,9 @@ const productSchema = z.object({
       .nonnegative({ message: "Stock must be a non-negative value" })
   ),
 
-  discount: z.preprocess(
-    (val) =>
-      val !== "" && val !== undefined ? parseFloat(val as string) : undefined,
-    z.number().min(0).max(100).optional()
-  ),
-
   description: z
     .string()
-    .max(500, { message: "Description must be under 500 characters" })
+    .max(50000, { message: "Description must be under 50k characters" })
     .optional(),
 
   category: z

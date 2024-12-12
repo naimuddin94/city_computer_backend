@@ -22,7 +22,8 @@ const createSchema = z.object({
     expiryDate: z.preprocess(
       (arg) => {
         if (typeof arg === "string") {
-          return new Date(arg);
+          const date = new Date(arg);
+          return date;
         }
         return arg;
       },

@@ -32,6 +32,7 @@ router
 
 router
   .route("/profile")
+  .get(auth("user", "vendor", "admin"), AuthController.getUserProfile)
   .patch(
     auth("user", "vendor", "admin"),
     upload.single("image"),

@@ -1,12 +1,23 @@
 import express from "express";
-import { auth } from "../../middleware";
+import { auth, validateRequest } from "../../middleware";
 import { OrderController } from "./order.controller";
+import { OrderValidation } from "./order.validation";
 
 const router = express.Router();
 
 router
   .route("/")
-  .get(auth("user"), OrderController.getMyOrders)
-  .post(auth("user", "vendor"), OrderController.createOrder);
+  .get(auth("user", "vendor"), OrderController.getMyOrders)
+  .post(
+    auth("user", "vendor", "admin"),
+    validateRequest(OrderValidation.createOrderSchema),
+    OrderController.createOrder
+  );
+
+router.route("/calculate").post(OrderController.calculateAmount);
+
+router
+  .route("/shop-orders")
+  .get(auth("vendor"), OrderController.getOrderForShopOwner);
 
 export const OrderRotes = router;

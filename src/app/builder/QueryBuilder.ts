@@ -66,10 +66,8 @@ class QueryBuilder<T> {
         acc.push({ [fieldName]: field.startsWith("-") ? "desc" : "asc" });
         return acc;
       }, [] as Record<string, Prisma.SortOrder>[]);
-
-      console.log("Order by: ", this.orderBy);
     } else {
-      this.orderBy = [{ createdAt: "desc" }]; // Default sort
+      this.orderBy = [{ createdAt: "desc" }];
     }
     return this;
   }

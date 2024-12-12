@@ -2,6 +2,21 @@ import httpStatus from "http-status";
 import { AppResponse, catchAsync } from "../../utils";
 import { OrderService } from "./order.service";
 
+// Calculate total amount
+const calculateAmount = catchAsync(async (req, res) => {
+  const result = await OrderService.calculateTotalAmount(req.body);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(
+        httpStatus.OK,
+        result,
+        "Calculated amount retrieved successfully"
+      )
+    );
+});
+
 // Save new order information
 const createOrder = catchAsync(async (req, res) => {
   const result = await OrderService.createOrder(req.user, req.body);
@@ -24,4 +39,20 @@ const getMyOrders = catchAsync(async (req, res) => {
     );
 });
 
-export const OrderController = { createOrder, getMyOrders };
+// Get order list form shop owner
+const getOrderForShopOwner = catchAsync(async (req, res) => {
+  const result = await OrderService.getOrderForShopOwnerFromDB(req.user);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(httpStatus.OK, result, "Order retrieved successfully")
+    );
+});
+
+export const OrderController = {
+  createOrder,
+  getMyOrders,
+  calculateAmount,
+  getOrderForShopOwner,
+};

@@ -51,6 +51,7 @@ const saveUserIntoDB = async (
     email: user.email,
     role: user.role,
     image: user.image,
+    name: user.name,
   };
 
   const accessToken = generateToken.accessToken(tokenPayload);
@@ -89,6 +90,7 @@ const signinUserIntoDB = async (payload: ILoginPayload) => {
     email: user.email,
     image: user.image,
     role: user.role,
+    name: user.name,
   };
 
   const accessToken = generateToken.accessToken(tokenPayload);
@@ -348,6 +350,22 @@ const fetchUserRoleFromDB = async (userId: string) => {
   });
 };
 
+// Fetch user information by token
+const fetchProfileData = async (user: JwtPayload) => {
+  return await prisma.user.findUniqueOrThrow({
+    where: {
+      userId: user.userId,
+      status: "active",
+    },
+    select: {
+      userId: true,
+      name: true,
+      email: true,
+      image: true,
+    },
+  });
+};
+
 export const AuthService = {
   saveUserIntoDB,
   signinUserIntoDB,
@@ -358,4 +376,5 @@ export const AuthService = {
   changeUserRoleIntoDB,
   saveRequestUserInfo,
   fetchUserRoleFromDB,
+  fetchProfileData,
 };

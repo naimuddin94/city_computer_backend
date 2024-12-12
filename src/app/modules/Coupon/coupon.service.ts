@@ -32,8 +32,17 @@ const createCoupon = async (
     );
   }
 
+  
+  const expiryDate = new Date(payload.expiryDate);
+
+  console.log({ expiryDate });
+
   return await prisma.coupon.create({
-    data: { ...payload, shop: { connect: { shopId: existShop.shopId } } },
+    data: {
+      ...payload,
+      expiryDate,
+      shop: { connect: { shopId: existShop.shopId } },
+    },
   });
 };
 

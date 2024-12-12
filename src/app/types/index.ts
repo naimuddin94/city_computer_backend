@@ -19,6 +19,7 @@ export interface IAccessTokenPayload extends IRefreshTokenPayload {
   email: string;
   role: Role;
   image: string | null;
+  name: string;
 }
 
 export interface IMeta {

@@ -7,6 +7,7 @@ import { MeilisearchRoutes } from "../modules/Meilisearch/meilisearch.routes";
 import { OrderRotes } from "../modules/Order/order.route";
 import { PaymentRoutes } from "../modules/Payment/payment.route";
 import { ProductRoutes } from "../modules/Product/product.route";
+import { ReviewRoutes } from "../modules/Review/review.route";
 import { ShopRoutes } from "../modules/Shop/shop.route";
 import { IRoutes } from "../types";
 
@@ -48,6 +49,10 @@ const moduleRoutes: IRoutes[] = [
   {
     path: "/payments",
     route: PaymentRoutes,
+  },
+  {
+    path: "/reviews",
+    route: ReviewRoutes,
   },
 ];
 

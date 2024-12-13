@@ -138,6 +138,18 @@ const getProductById = async (productId: string) => {
       description: true,
       createdAt: true,
       updatedAt: true,
+      reviews: {
+        select: {
+          comment: true,
+          user: {
+            select: {
+              name: true,
+              image: true,
+              email: true,
+            },
+          },
+        },
+      },
       category: {
         select: {
           name: true,

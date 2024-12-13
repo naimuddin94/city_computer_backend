@@ -295,7 +295,7 @@ const getOrderForShopOwnerFromDB = async (user: JwtPayload) => {
   // Fetch pending orders where the shop's products are involved
   const orders = await prisma.order.findMany({
     where: {
-      status: "pending",
+      status: { not: "delivered" },
       orderItems: {
         some: {
           product: {
@@ -317,11 +317,27 @@ const getOrderForShopOwnerFromDB = async (user: JwtPayload) => {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return orders;
 };
 
+// Change the order status
+const changeOrderStatus = async (orderId: string, status: OrderStatus) => {
+  await prisma.order.findUniqueOrThrow({ where: { orderId } });
+
+  return await prisma.order.update({
+    where: {
+      orderId,
+    },
+    data: {
+      status,
+    },
+  });
+};
 
 export const OrderService = {
   createOrder,
@@ -332,4 +348,5 @@ export const OrderService = {
   deleteOrder,
   calculateTotalAmount,
   getOrderForShopOwnerFromDB,
+  changeOrderStatus,
 };

@@ -66,9 +66,20 @@ const getShopFollowersCount = catchAsync(async (req, res) => {
     );
 });
 
+// Get all following info by user and shop info
+const getFollowingInfo = catchAsync(async (req, res) => {
+  const { shopId } = req.params;
+  const result = await FollowerService.getFollowingInfoFromDB(req.user, shopId);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, "Following retrieved"));
+});
+
 export const FollowerController = {
   followShop,
   getFollowedShops,
   getShopFollowers,
   getShopFollowersCount,
+  getFollowingInfo,
 };

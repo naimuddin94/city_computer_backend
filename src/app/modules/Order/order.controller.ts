@@ -50,9 +50,21 @@ const getOrderForShopOwner = catchAsync(async (req, res) => {
     );
 });
 
+// Change the order status
+const changeOrderStatus = catchAsync(async (req, res) => {
+  const orderId = req.params.orderId;
+  const status = req.body.status;
+  const result = await OrderService.changeOrderStatus(orderId, status);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, "Order status updated"));
+});
+
 export const OrderController = {
   createOrder,
   getMyOrders,
   calculateAmount,
   getOrderForShopOwner,
+  changeOrderStatus,
 };

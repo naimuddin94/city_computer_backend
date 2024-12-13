@@ -20,4 +20,12 @@ router
   .route("/shop-orders")
   .get(auth("vendor"), OrderController.getOrderForShopOwner);
 
+router
+  .route("/change-status/:orderId")
+  .patch(
+    auth("vendor"),
+    validateRequest(OrderValidation.changeOrderStatusSchema),
+    OrderController.changeOrderStatus
+  );
+
 export const OrderRotes = router;

@@ -85,9 +85,28 @@ const getShopFollowersCount = async (shopId: string) => {
   });
 };
 
+// Find user following information
+const getFollowingInfoFromDB = async (user: JwtPayload, shopId: string) => {
+  const followingInfo = await prisma.follower.findUnique({
+    where: {
+      userId_shopId: {
+        shopId,
+        userId: user.userId,
+      },
+    },
+  });
+
+  if (followingInfo) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const FollowerService = {
   followShop,
   getFollowedShops,
   getShopFollowers,
   getShopFollowersCount,
+  getFollowingInfoFromDB,
 };

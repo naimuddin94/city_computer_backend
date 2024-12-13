@@ -1,6 +1,19 @@
 import { z } from "zod";
 import { cookieValidationSchema } from "../Auth/auth.validation";
 
+// Define the enum for order status
+const OrderStatus = z.enum([
+  "pending",
+  "processing",
+  "shipped",
+  "delivered",
+  "completed",
+  "cancelled",
+  "returned",
+  "refund_requested",
+  "refunded",
+]);
+
 // Validation schema for creating a new order
 const orderItemSchema = z.object({
   productId: z
@@ -34,4 +47,12 @@ const createOrderSchema = z.object({
   }),
 });
 
-export const OrderValidation = { createOrderSchema };
+// Validation schema for changing order status
+const changeOrderStatusSchema = z.object({
+  cookies: cookieValidationSchema,
+  body: z.object({
+    status: OrderStatus,
+  }),
+});
+
+export const OrderValidation = { createOrderSchema, changeOrderStatusSchema };

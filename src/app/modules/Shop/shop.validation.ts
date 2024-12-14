@@ -20,4 +20,11 @@ const createShopSchema = z.object({
   }),
 });
 
-export const ShopValidation = { createShopSchema };
+const updateShopStatusSchema = z.object({
+  cookies: cookieValidationSchema,
+  body: z.object({
+    name: z.enum(["active", "blocked"]),
+  }),
+});
+
+export const ShopValidation = { createShopSchema, updateShopStatusSchema };

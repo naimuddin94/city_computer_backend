@@ -19,4 +19,8 @@ router
 
 router.route("/:productId").get(ProductController.getProductById);
 
+router
+  .route("/fetch-product/shop-owner")
+  .get(auth("vendor"), ProductController.getProductsByShopOwner);
+
 export const ProductRoutes = router;

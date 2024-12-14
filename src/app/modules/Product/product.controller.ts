@@ -67,9 +67,22 @@ const deleteProduct = catchAsync(async (req, res) => {
     );
 });
 
+// Get products by auth user
+const getProductsByShopOwner = catchAsync(async (req, res) => {
+  const user = req.user;
+  const result = await ProductService.fetchProductsByShopOwner(user);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(httpStatus.OK, result, "Product fetched successfully")
+    );
+});
+
 export const ProductController = {
   createProduct,
   getAllProducts,
   getProductById,
   deleteProduct,
+  getProductsByShopOwner,
 };

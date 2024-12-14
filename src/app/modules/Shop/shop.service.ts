@@ -1,8 +1,10 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Status } from "@prisma/client";
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
+import QueryBuilder from "../../builder/QueryBuilder";
 import { prisma } from "../../lib";
 import { AppError, fileUploadOnCloudinary } from "../../utils";
+import { fields, searchableFields } from "./shop.constant";
 
 // Create a new shop into the database
 const saveShopIntoDB = async (
@@ -69,11 +71,36 @@ const getShopFromDB = async (shopId: string) => {
 };
 
 // Get all shop from database
-const getAllShopFromDB = async () => {
-  return await prisma.shop.findMany({
-    where: {
-      status: "active",
-    },
+const getAllShopFromDB = async (query: Record<string, unknown>) => {
+  const queryBuilder = new QueryBuilder("shop", query);
+
+  // Use QueryBuilder methods
+  const data = await queryBuilder
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields(fields)
+    .execute();
+
+  // Get the total count using countTotal
+  const meta = await queryBuilder.countTotal();
+
+  return {
+    meta,
+    data: data,
+  };
+};
+
+// update shop status
+const updateShopStatus = async (shopId: string, status: Status) => {
+  await prisma.shop.findUniqueOrThrow({
+    where: { shopId },
+  });
+
+  return prisma.shop.update({
+    where: { shopId },
+    data: { status },
   });
 };
 
@@ -82,4 +109,5 @@ export const ShopService = {
   getShopByUser,
   getShopFromDB,
   getAllShopFromDB,
+  updateShopStatus,
 };

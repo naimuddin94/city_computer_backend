@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import { pick } from "../../lib";
 import { AppResponse, catchAsync } from "../../utils";
 import { ShopService } from "./shop.service";
 
@@ -50,17 +51,37 @@ const getShopByID = catchAsync(async (req, res) => {
 
 // Get all shop information retrieved
 const getAllShops = catchAsync(async (req, res) => {
-  const result = await ShopService.getAllShopFromDB();
+  const query = pick(req.query, [
+    "page",
+    "limit",
+    "searchTerm",
+    "sort",
+    "fields",
+  ]);
+  const { data, meta } = await ShopService.getAllShopFromDB(query);
 
   res
     .status(httpStatus.OK)
     .json(
       new AppResponse(
         httpStatus.OK,
-        result,
-        "Shops information retrieved successfully"
+        data,
+        "Shops information retrieved successfully",
+        meta
       )
     );
+});
+
+// Update shop status
+const updateShopStatus = catchAsync(async (req, res) => {
+  const shopId = req.params.shopId;
+  const status = req.body.status;
+
+  const result = await ShopService.updateShopStatus(shopId, status);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, "Shop status updated"));
 });
 
 export const ShopController = {
@@ -68,4 +89,5 @@ export const ShopController = {
   getShopByUser,
   getShopByID,
   getAllShops,
+  updateShopStatus,
 };

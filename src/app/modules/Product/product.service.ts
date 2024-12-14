@@ -9,7 +9,12 @@ import {
   deleteFromMeiliSearch,
   IMeiliSearchPayload,
 } from "../../utils/meilisearch";
-import { fields, searchableFields } from "./product.constant";
+import {
+  fields,
+  searchableFields,
+  shopFields,
+  shopSearchableFields,
+} from "./product.constant";
 
 // Save product into the database
 const saveProductIntoDB = async (
@@ -185,9 +190,39 @@ const deleteProduct = async (productId: string) => {
   return null;
 };
 
+// Fetches all products by shop owner
+const fetchProductsByShopOwner = async (user: JwtPayload) => {
+  const shop = await prisma.shop.findUniqueOrThrow({
+    where: {
+      vendorId: user.userId,
+      status: "active",
+    },
+  });
+
+  const queryBuilder = new QueryBuilder("product", { shopId: shop.shopId });
+
+  // Use QueryBuilder methods
+  const data = await queryBuilder
+    .search(shopSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields(shopFields)
+    .execute();
+
+  // Get the total count using countTotal
+  const meta = await queryBuilder.countTotal();
+
+  return {
+    meta,
+    data: data,
+  };
+};
+
 export const ProductService = {
   saveProductIntoDB,
   getAllProducts,
   getProductById,
   deleteProduct,
+  fetchProductsByShopOwner,
 };

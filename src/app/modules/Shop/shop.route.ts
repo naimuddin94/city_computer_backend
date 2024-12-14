@@ -21,6 +21,9 @@ router
   .route("/get-shop-info")
   .get(auth("vendor"), ShopController.getShopByUser);
 
-router.route("/:shopId").get(ShopController.getShopByID);
+router
+  .route("/:shopId")
+  .get(ShopController.getShopByID)
+  .patch(auth("admin"), ShopController.updateShopStatus);
 
 export const ShopRoutes = router;

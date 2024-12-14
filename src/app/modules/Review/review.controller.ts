@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import { pick } from "../../lib";
 import { AppResponse, catchAsync } from "../../utils";
 import { ReviewService } from "./review.service";
 
@@ -15,22 +16,33 @@ const createReview = catchAsync(async (req, res) => {
   res
     .status(httpStatus.CREATED)
     .json(
-      new AppResponse(httpStatus.CREATED, result, "Review created successfully")
+      new AppResponse(httpStatus.CREATED, result, "Review saved successfully")
     );
 });
 
 // Get reviews for a product
 const getProductReviews = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  const result = await ReviewService.getProductReviews(productId);
+  const query = pick(req.query, [
+    "page",
+    "limit",
+    "searchTerm",
+    "sort",
+    "fields",
+  ]);
+  const { data, meta } = await ReviewService.getProductReviews(
+    productId,
+    query
+  );
 
   res
     .status(httpStatus.OK)
     .json(
       new AppResponse(
         httpStatus.OK,
-        result,
-        "Product reviews retrieved successfully"
+        data,
+        "Product reviews retrieved successfully",
+        meta
       )
     );
 });

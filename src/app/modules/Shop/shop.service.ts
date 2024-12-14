@@ -42,7 +42,44 @@ const getShopByUser = async (user: JwtPayload) => {
   });
 };
 
+// Get shop by shopId
+const getShopFromDB = async (shopId: string) => {
+  return await prisma.shop.findUniqueOrThrow({
+    where: {
+      shopId,
+      status: "active",
+    },
+    select: {
+      shopId: true,
+      name: true,
+      address: true,
+      description: true,
+      logo: true,
+      createdAt: true,
+      vendor: {
+        select: {
+          userId: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+    },
+  });
+};
+
+// Get all shop from database
+const getAllShopFromDB = async () => {
+  return await prisma.shop.findMany({
+    where: {
+      status: "active",
+    },
+  });
+};
+
 export const ShopService = {
   saveShopIntoDB,
   getShopByUser,
+  getShopFromDB,
+  getAllShopFromDB,
 };

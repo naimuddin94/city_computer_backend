@@ -9,6 +9,7 @@ const router = express.Router();
 
 router
   .route("/")
+  .get(ShopController.getAllShops)
   .post(
     upload.single("logo"),
     auth("vendor", "admin"),
@@ -19,5 +20,7 @@ router
 router
   .route("/get-shop-info")
   .get(auth("vendor"), ShopController.getShopByUser);
+
+router.route("/:shopId").get(ShopController.getShopByID);
 
 export const ShopRoutes = router;

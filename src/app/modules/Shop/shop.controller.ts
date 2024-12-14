@@ -32,7 +32,40 @@ const getShopByUser = catchAsync(async (req, res) => {
     );
 });
 
+// Get shop information by shop id
+const getShopByID = catchAsync(async (req, res) => {
+  const shopId = req.params.shopId;
+  const result = await ShopService.getShopFromDB(shopId);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(
+        httpStatus.OK,
+        result,
+        "Shop information retrieved successfully"
+      )
+    );
+});
+
+// Get all shop information retrieved
+const getAllShops = catchAsync(async (req, res) => {
+  const result = await ShopService.getAllShopFromDB();
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(
+        httpStatus.OK,
+        result,
+        "Shops information retrieved successfully"
+      )
+    );
+});
+
 export const ShopController = {
   createShop,
   getShopByUser,
+  getShopByID,
+  getAllShops,
 };

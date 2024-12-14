@@ -25,12 +25,17 @@ const getAllProducts = catchAsync(async (req, res) => {
     "sort",
     "fields",
   ]);
-  const result = await ProductService.getAllProducts(query);
+  const { data, meta } = await ProductService.getAllProducts(query);
 
   res
     .status(httpStatus.OK)
     .json(
-      new AppResponse(httpStatus.OK, result, "Products retrieved successfully")
+      new AppResponse(
+        httpStatus.OK,
+        data,
+        "Products retrieved successfully",
+        meta
+      )
     );
 });
 

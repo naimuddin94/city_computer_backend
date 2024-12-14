@@ -1,7 +1,9 @@
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
+import QueryBuilder from "../../builder/QueryBuilder";
 import { prisma } from "../../lib";
 import { AppError } from "../../utils";
+import { fields, searchableFields } from "./review.constant";
 
 // Create a review
 const createReview = async (
@@ -41,19 +43,27 @@ const createReview = async (
 };
 
 // Get all reviews for a product
-const getProductReviews = async (productId: string) => {
-  return await prisma.review.findMany({
-    where: { productId },
-    include: {
-      user: {
-        select: {
-          userId: true,
-          name: true,
-          image: true,
-        },
-      },
-    },
-  });
+const getProductReviews = async (
+  productId: string,
+  query: Record<string, unknown>
+) => {
+  const queryBuilder = new QueryBuilder("review", query);
+
+  const data = await queryBuilder
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields(fields)
+    .execute();
+
+  // Get the total count using countTotal
+  const meta = await queryBuilder.countTotal();
+
+  return {
+    meta,
+    data: data,
+  };
 };
 
 // Get a user's review for a product

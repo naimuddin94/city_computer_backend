@@ -9,14 +9,20 @@
 import { Server } from "http";
 import app from "./app";
 import config from "./app/config";
+import seedingAdmin from "./app/utils/seeding";
 
 let server: Server;
 
 // Server running IIFE functionality
 (async function () {
-  server = app.listen(config.port, function () {
-    console.log("Server listening on port: ", config.port);
-  });
+  try {
+    server = app.listen(config.port, function () {
+      console.log("Server listening on port: ", config.port);
+    });
+    await seedingAdmin();
+  } catch {
+    console.log("something went wrong when connecting");
+  }
 })();
 
 // Uncaught exception handler

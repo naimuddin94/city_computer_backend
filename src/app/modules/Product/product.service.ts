@@ -179,19 +179,34 @@ const deleteProduct = async (productId: string) => {
     },
   });
 
-  await prisma.product.delete({
-    where: {
-      productId,
-    },
+  const result = await prisma.$transaction(async (tx) => {
+    // Delete related order items
+    await tx.orderItem.deleteMany({
+      where: { productId },
+    });
+
+    // Delete related reviews
+    await tx.review.deleteMany({
+      where: { productId },
+    });
+
+    return await tx.product.delete({
+      where: { productId },
+    });
   });
 
-  await deleteFromMeiliSearch(product.productId);
+  if (result) {
+    await deleteFromMeiliSearch(product.productId);
+  }
 
   return null;
 };
 
 // Fetches all products by shop owner
-const fetchProductsByShopOwner = async (user: JwtPayload) => {
+const fetchProductsByShopOwner = async (
+  user: JwtPayload,
+  query: Record<string, unknown>
+) => {
   const shop = await prisma.shop.findUniqueOrThrow({
     where: {
       vendorId: user.userId,
@@ -199,7 +214,9 @@ const fetchProductsByShopOwner = async (user: JwtPayload) => {
     },
   });
 
-  const queryBuilder = new QueryBuilder("product", { shopId: shop.shopId });
+  query["shopId"] = shop.shopId;
+
+  const queryBuilder = new QueryBuilder("product", query);
 
   // Use QueryBuilder methods
   const data = await queryBuilder
@@ -219,10 +236,70 @@ const fetchProductsByShopOwner = async (user: JwtPayload) => {
   };
 };
 
+// Update product by shop owner
+const updateProduct = async (
+  user: JwtPayload,
+  productId: string,
+  payload: Prisma.ProductUpdateInput,
+  file: Express.Multer.File | null
+) => {
+  // Check if the product exists and belongs to the user's shop
+  await prisma.product.findFirstOrThrow({
+    where: {
+      productId,
+      shop: {
+        vendorId: user.userId,
+        status: "active",
+      },
+    },
+    include: {
+      shop: true,
+    },
+  });
+
+  // Update image if a new file is uploaded
+  if (file) {
+    const imageUrl = await fileUploadOnCloudinary(file.buffer);
+    if (imageUrl) {
+      payload.image = imageUrl;
+    }
+  }
+
+  // Update the product
+  const updatedProduct = await prisma.product.update({
+    where: { productId },
+    data: payload,
+    select: {
+      productId: true,
+      name: true,
+      price: true,
+      stock: true,
+      image: true,
+      description: true,
+      shop: {
+        select: {
+          shopId: true,
+          vendorId: true,
+          name: true,
+          logo: true,
+        },
+      },
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return updatedProduct;
+};
+
 export const ProductService = {
   saveProductIntoDB,
   getAllProducts,
   getProductById,
   deleteProduct,
   fetchProductsByShopOwner,
+  updateProduct,
 };

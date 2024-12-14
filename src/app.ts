@@ -9,7 +9,6 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
-import config from "./app/config";
 import router from "./app/routes";
 import { globalErrorHandler, notFound } from "./app/utils";
 
@@ -17,7 +16,7 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: [config.client_url as string],
+    origin: ["https://citycomputer.vercel.app"],
     credentials: true,
   })
 );

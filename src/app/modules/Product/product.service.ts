@@ -158,6 +158,7 @@ const getProductById = async (productId: string) => {
       category: {
         select: {
           name: true,
+          categoryId: true,
         },
       },
       shop: {
@@ -265,10 +266,23 @@ const updateProduct = async (
     }
   }
 
+  if (payload.price) {
+    payload.price = Number(payload.price);
+  }
+
+  if (payload.stock) {
+    payload.stock = Number(payload.stock);
+  }
+
   // Update the product
   const updatedProduct = await prisma.product.update({
     where: { productId },
-    data: payload,
+    data: {
+      ...payload,
+      category: {
+        connect: { categoryId: payload.category as string },
+      },
+    },
     select: {
       productId: true,
       name: true,

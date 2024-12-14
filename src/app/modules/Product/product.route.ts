@@ -17,7 +17,15 @@ router
   )
   .get(ProductController.getAllProducts);
 
-router.route("/:productId").get(ProductController.getProductById);
+router
+  .route("/:productId")
+  .get(ProductController.getProductById)
+  .delete(auth("admin", "vendor"), ProductController.deleteProduct)
+  .patch(
+    auth("vendor"),
+    upload.single("image"),
+    ProductController.updateProduct
+  );
 
 router
   .route("/fetch-product/shop-owner")

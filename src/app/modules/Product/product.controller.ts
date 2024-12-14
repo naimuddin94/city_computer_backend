@@ -54,16 +54,12 @@ const getProductById = catchAsync(async (req, res) => {
 // Delete product by ID
 const deleteProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  await ProductService.deleteProduct(productId);
+  const result = await ProductService.deleteProduct(productId);
 
   res
-    .status(httpStatus.NO_CONTENT)
+    .status(httpStatus.OK)
     .json(
-      new AppResponse(
-        httpStatus.NO_CONTENT,
-        null,
-        "Product deleted successfully"
-      )
+      new AppResponse(httpStatus.OK, result, "Product deleted successfully")
     );
 });
 
@@ -83,10 +79,30 @@ const getProductsByShopOwner = catchAsync(async (req, res) => {
     );
 });
 
+// Update product
+const updateProduct = catchAsync(async (req, res) => {
+  const file = req.file || null;
+  const productId = req.params.productId;
+
+  const result = await ProductService.updateProduct(
+    req.user,
+    productId,
+    req.body,
+    file
+  );
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(httpStatus.OK, result, "Product updated successfully")
+    );
+});
+
 export const ProductController = {
   createProduct,
   getAllProducts,
   getProductById,
   deleteProduct,
   getProductsByShopOwner,
+  updateProduct,
 };

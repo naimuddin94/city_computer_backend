@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
+import { pick } from "../../lib";
 import { AppResponse, catchAsync } from "../../utils";
 import { CouponService } from "./coupon.service";
 
@@ -14,19 +14,21 @@ const createCoupon = catchAsync(async (req, res) => {
 });
 
 // Get all coupons with optional filters
-const getAllCoupons = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const query = req.query;
-    const coupons = await CouponService.getAllCoupons(query);
-    res.status(httpStatus.OK).json({ success: true, data: coupons });
-  } catch (error) {
-    next(error);
-  }
-};
+const getAllCoupons = catchAsync(async (req, res) => {
+  const query = pick(req.query, ["page", "limit", "searchTerm"]);
+  const { data, meta } = await CouponService.getAllCoupons(req.user, query);
+
+  res
+    .status(httpStatus.OK)
+    .json(
+      new AppResponse(
+        httpStatus.OK,
+        data,
+        "Coupons retrieved successfully",
+        meta
+      )
+    );
+});
 
 // Get a single coupon by code and shopId
 const getCouponByCode = catchAsync(async (req, res) => {

@@ -12,8 +12,7 @@ router
     validateRequest(CouponValidation.createSchema),
     CouponController.createCoupon
   )
-
-  .get(auth(), CouponController.getAllCoupons);
+  .get(auth("admin", "vendor"), CouponController.getAllCoupons);
 
 router
   .route("/:code")
@@ -26,6 +25,8 @@ router
 
 router.route("/:code/:shopId").get(CouponController.getCouponByCode);
 
-router.route("/shop/available/:shopId").get(CouponController.getAvailableCoupon);
+router
+  .route("/shop/available/:shopId")
+  .get(CouponController.getAvailableCoupon);
 
 export const CouponRoutes = router;

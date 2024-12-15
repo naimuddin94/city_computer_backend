@@ -1,8 +1,10 @@
 import { Coupon } from "@prisma/client";
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
+import QueryBuilder from "../../builder/QueryBuilder";
 import { prisma } from "../../lib";
 import { AppError } from "../../utils";
+import { fields, searchableFields } from "./coupon.constant";
 
 // Create a new coupon
 const createCoupon = async (
@@ -32,10 +34,7 @@ const createCoupon = async (
     );
   }
 
-  
   const expiryDate = new Date(payload.expiryDate);
-
-  console.log({ expiryDate });
 
   return await prisma.coupon.create({
     data: {
@@ -47,8 +46,37 @@ const createCoupon = async (
 };
 
 // Get all coupons with optional filters (like active coupons)
-const getAllCoupons = async (query: Record<string, unknown>) => {
-  const { shopId, isActive } = query;
+const getAllCoupons = async (
+  user: JwtPayload,
+  query: Record<string, unknown>
+) => {
+  if (user?.role !== "admin") {
+    const shop = await prisma.shop.findUniqueOrThrow({
+      where: {
+        vendorId: user.userId,
+        status: "active",
+      },
+    });
+
+    query["shopId"] = shop.shopId;
+  }
+
+  const queryBuilder = new QueryBuilder("coupon", query);
+
+  // Use QueryBuilder methods
+  const data = await queryBuilder
+    .search(searchableFields)
+    .paginate()
+    .fields(fields)
+    .execute();
+
+  // Get the total count using countTotal
+  const meta = await queryBuilder.countTotal();
+
+  return {
+    meta,
+    data: data,
+  };
 };
 
 // Get coupon by code and shopId

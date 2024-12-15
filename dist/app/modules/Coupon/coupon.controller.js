@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CouponController = void 0;
 const http_status_1 = __importDefault(require("http-status"));
+const lib_1 = require("../../lib");
 const utils_1 = require("../../utils");
 const coupon_service_1 = require("./coupon.service");
 // Create a new coupon
@@ -17,16 +18,13 @@ const createCoupon = (0, utils_1.catchAsync)(async (req, res) => {
         .json(new utils_1.AppResponse(http_status_1.default.CREATED, result, "Coupon created"));
 });
 // Get all coupons with optional filters
-const getAllCoupons = async (req, res, next) => {
-    try {
-        const query = req.query;
-        const coupons = await coupon_service_1.CouponService.getAllCoupons(query);
-        res.status(http_status_1.default.OK).json({ success: true, data: coupons });
-    }
-    catch (error) {
-        next(error);
-    }
-};
+const getAllCoupons = (0, utils_1.catchAsync)(async (req, res) => {
+    const query = (0, lib_1.pick)(req.query, ["page", "limit", "searchTerm"]);
+    const { data, meta } = await coupon_service_1.CouponService.getAllCoupons(req.user, query);
+    res
+        .status(http_status_1.default.OK)
+        .json(new utils_1.AppResponse(http_status_1.default.OK, data, "Coupons retrieved successfully", meta));
+});
 // Get a single coupon by code and shopId
 const getCouponByCode = (0, utils_1.catchAsync)(async (req, res) => {
     const { code, shopId } = req.params;

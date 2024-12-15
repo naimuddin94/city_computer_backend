@@ -84,8 +84,8 @@ model Shop {
   updatedAt   DateTime @updatedAt
 
   products Product[]
-  Follower Follower[]
-  Coupon   Coupon[]
+  follower Follower[]
+  coupon   Coupon[]
 }
 
 // Product category Model

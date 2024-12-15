@@ -17,7 +17,7 @@ const routes_1 = __importDefault(require("./app/routes"));
 const utils_1 = require("./app/utils");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: ["https://citycomputer.vercel.app"],
+    origin: ["https://citycomputer.vercel.app", "http://localhost:3000"],
     credentials: true,
 }));
 app.use(express_1.default.json());

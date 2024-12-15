@@ -15,7 +15,7 @@ const createShopSchema = zod_1.z.object({
             .max(100, { message: "Address must be under 100 characters" }),
         description: zod_1.z
             .string()
-            .max(500, { message: "Description must be under 500 characters" })
+            .max(5000, { message: "Description must be under 5k characters" })
             .optional(),
     }),
 });

@@ -59,6 +59,13 @@ const getShopFromDB = async (shopId) => {
                     image: true,
                 },
             },
+            coupon: {
+                where: {
+                    expiryDate: {
+                        gt: new Date(),
+                    },
+                },
+            },
         },
     });
 };
